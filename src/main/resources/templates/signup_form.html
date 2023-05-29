@@ -38,7 +38,7 @@ $(function() {
   
   // password 유효성 검증
   var $password1 = $('#password1');
-  var $passwordError = $('#password1-error');
+  var $inputCode_error = $('#password1-error');
   
   $password1.on('input focusout', function() {
     var password = $password1.val();
@@ -82,8 +82,38 @@ $(function() {
 			}
 			
 			
+			
+     
 	});
 
+var $inputCode = $('#inputCode');
+var $inputCode_error = $('#inputCode_error');
+  
+  $inputCode.on('input focusout', function() {
+    var inputCode = $inputCode.val();
+    
+    if (inputCode.trim() === '') {
+       $inputCode_error.text('인증번호 확인은 필수 값입니다.').show();
+    } else {
+		 $inputCode_error.hide();
+		 
+		    $.ajax({
+        type: 'POST',
+        url: '/user/verify', // Endpoint for email verification code validation
+        data: { "inputCode": inputCode },
+        dataType: 'json',
+        success: function(response) {
+          // If the response is successful, the email code is valid
+          // You can perform further actions or display a success message
+          $inputCode_error.text('일치함').show()
+        }
+        });
+        
+	}
+	});
+    
+   
+  
 //
 
 
@@ -132,6 +162,7 @@ $(function() {
 			<label for="code" class="form-label">인증번호</label>
               <input type="text" class="form-control" name="inputCode" id="inputCode" maxlength="6" placeholder="인증번호를 입력해주세요" >
             <input class="btn btn-outline-primary"  name="check" id="check"  type="button" value="확인하기">
+            <div id="inputCode_error"></div>
 			</div></br>
 
       
@@ -150,6 +181,9 @@ $(function() {
 		font-size: 1px;
 	}
 	#email-error{
+		font-size: 1px;
+	}
+	#inputCode_error{
 		font-size: 1px;
 	}
 </style>

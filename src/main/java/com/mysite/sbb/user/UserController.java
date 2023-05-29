@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mysite.sbb.email.EmailService;
+import com.mysite.sbb.email.RedisUtill;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +31,8 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    @Autowired
+    private RedisUtill redisUtill;
 
     
     @GetMapping("/signup")
@@ -82,4 +86,16 @@ public class UserController {
         return code;
     }
     
+    @PostMapping("/verifyemail")
+    @ResponseBody
+    public ResponseEntity<String> verifyEmailCode(@RequestParam String code) {
+        try {
+            String verifiedEmail = emailService.verifyEmail(code);
+            return ResponseEntity.ok(verifiedEmail);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email verification code.");
+        }
+    }
+   
+  
 }

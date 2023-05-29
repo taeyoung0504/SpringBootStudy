@@ -3,8 +3,10 @@ package com.mysite.sbb.email;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -22,9 +24,12 @@ import lombok.RequiredArgsConstructor;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
-
+    @Autowired
+    private RedisUtill redisUtill;
+ 
+  
     //인증번호 생성
-    private final String ePw = createKey();
+    private String ePw;
 
     @Value("${spring.mail.username}")
     private String id;
@@ -34,7 +39,7 @@ public class EmailService {
         MimeMessage  message = javaMailSender.createMimeMessage();
 
         message.addRecipients(MimeMessage.RecipientType.TO, to); // to 보내는 대상
-        message.setSubject("ㅇㅇㅇ 회원가입 인증 코드: "); //메일 제목
+        message.setSubject(" 회원가입 인증 코드: "); //메일 제목
 
         // 메일 내용 메일의 subtype을 html로 지정하여 html문법 사용 가능
         String msg="";
@@ -45,8 +50,9 @@ public class EmailService {
         msg += "</td></tr></tbody></table></div>";
 
         message.setText(msg, "utf-8", "html"); //내용, charset타입, subtype
-        message.setFrom(new InternetAddress(id,"저기어때_Admin")); //보내는 사람의 메일 주소, 보내는 사람 이름
-
+        message.setFrom(new InternetAddress(id,"저기어때")); //보내는 사람의 메일 주소, 보내는 사람 이름
+        
+      
         return message;
     }
 
@@ -55,27 +61,11 @@ public class EmailService {
         StringBuffer key = new StringBuffer();
         Random rnd = new Random();
 
-        for (int i = 0; i < 8; i++) { // 인증코드 8자리
-            int index = rnd.nextInt(3); // 0~2 까지 랜덤
- 
-            switch (index) {
-                case 0:
-                    key.append((char) ((int) (rnd.nextInt(26)) + 97));
-                    //  a~z  (ex. 1+97=98 => (char)98 = 'b')
-                    break;
-                case 1:
-                    key.append((char) ((int) (rnd.nextInt(26)) + 65));
-                    //  A~Z
-                    break;
-                case 2:
-                    key.append((rnd.nextInt(10)));
-                    // 0~9
-                    break;
-            }
+        for (int i = 0; i < 6; i++) { // 인증코드 6자리
+            key.append((rnd.nextInt(10)));
         }
         return key.toString();
     }
-
     /*
         메일 발송
         sendSimpleMessage의 매개변수로 들어온 to는 인증번호를 받을 메일주소
@@ -83,13 +73,24 @@ public class EmailService {
         bean으로 등록해둔 javaMailSender 객체를 사용하여 이메일 send
      */
     public String sendSimpleMessage(String to)throws Exception {
+    	ePw = createKey();
         MimeMessage message = createMessage(to);
         try{
+        	redisUtill.setDataExpire(ePw, to, 60*1L); //인증코드 1분 시간제한
             javaMailSender.send(message); // 메일 발송
         }catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
         return ePw; // 메일로 보냈던 인증 코드를 서버로 리턴
+    }
+    
+    public String verifyEmail(String key) throws ChangeSetPersister.NotFoundException {
+        String memberEmail = redisUtill.getData(key);
+        if (memberEmail == null) {
+            throw new ChangeSetPersister.NotFoundException();
+        }
+        redisUtill.deleteData(key);
+        return ePw;
     }
 }
