@@ -86,16 +86,5 @@ public class UserController {
         return code;
     }
     
-    @PostMapping("/verifyemail")
-    @ResponseBody
-    public ResponseEntity<String> verifyEmailCode(@RequestParam String code) {
-        try {
-            String verifiedEmail = emailService.verifyEmail(code);
-            return ResponseEntity.ok(verifiedEmail);
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email verification code.");
-        }
-    }
-   
   
 }
