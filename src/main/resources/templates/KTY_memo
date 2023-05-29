@@ -1,0 +1,32 @@
+  템플릿 상속 하려면... 
+<html layout:decorate="~{layout}">
+	<div layout:fragment="content" >
+  <h1>없는 페이지 입니다.</h1>
+  <p>이곳은 없는 페이지 입니다.</p>
+</div>
+</html>
+
+<-0----- div 태그가 꼭 들어가야함!
+
+ layout.html 
+ 
+ 
+<!doctype html>
+<html lang="ko">
+<head>
+	
+	
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+    <!-- sbb CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+    <title>Hello, sbb!</title>
+</head>
+<body>
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+<th:block layout:fragment="content"></th:block>
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+</body>

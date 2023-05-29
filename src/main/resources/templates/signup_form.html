@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Validation Example</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+  <script>
+$(function() {
+  // username 유효성 검증
+  var $username = $('#username');
+  var $usernameError = $('#username-error');
+  
+  $username.on('input focusout', function() {
+    var username = $username.val();
+    
+    if (username.trim() === '') {
+      $usernameError.text('아이디는 필수 값입니다.').show();
+    } else if (username.length < 6 || username.length > 12) {
+      $usernameError.text('아이디는 6-12자리여야 합니다.').show();
+    } else {
+      $usernameError.hide();
+      
+      $.ajax({
+        type: 'POST',
+        url: '/user/check', // 중복 아이디 검증을 위한 엔드포인트
+        data: { "username": username },
+        dataType: 'json',
+        success: function(data) {
+          if (data == 1) {
+            $usernameError.text('이미 존재하는 아이디입니다.').show();
+          } else {
+            $usernameError.text('사용 가능한 아이디입니다.').show();
+          }
+        }
+      });
+    }
+  });
+  
+  // password 유효성 검증
+  var $password1 = $('#password1');
+  var $passwordError = $('#password1-error');
+  
+  $password1.on('input focusout', function() {
+    var password = $password1.val();
+    
+    var pattern = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{6,12}$/;
+    
+    if (password.trim() === '') {
+      $passwordError.text('패스워드는 필수 값입니다.').show();
+    } else if (!pattern.test(password)) {
+      $passwordError.text('비밀번호는 영문자와 숫자, 특수기호를 적어도 1개 이상 포함하고 6-12자리여야 합니다.').show();
+    } else {
+      $passwordError.hide();
+    }
+  });
+
+
+
+//인증번호 발송
+
+    var $checkEmailNumber = $('#checkEmailNumber');
+    var $email = $('#email');
+    
+    $checkEmailNumber.on('click', function(){
+		var email = $email.val();
+		
+		
+			if(email.trim()!==''){
+			$.ajax({
+			url: "/user/emailcode",
+			type: "POST",
+			data: {
+				"email" : email				
+			},
+			success: function(data){
+				alert("인증번호가 발송되었습니다");
+			},
+			error: function(){
+				alert("인증번호 전송에 실패했습니다");
+			}
+			});
+			}
+			
+			
+	});
+
+//
+
+
+
+
+
+
+
+
+
+});
+
+  </script>
+</head>
+<div class="container my-3">
+    <div class="my-3 border-bottom">
+        <div>
+            <h4>회원가입</h4>
+        </div>
+    </div>
+    <form th:action="@{/user/signup}" th:object="${userCreateForm}" method="post">
+		 <div th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" 
+             class="alert alert-danger" role="alert" th:text="${err}"></div> 
+        <div class="mb-3">
+            <label for="username" class="form-label">사용자ID</label>
+            <input type="text" th:field="*{username}" class="form-control">
+            <div id="username-error"></div>
+        </div><br>
+        <div class="mb-3">
+            <label for="password1" class="form-label">비밀번호</label>
+            <input type="password" th:field="*{password1}" class="form-control">
+  			<div id="password1-error"></div>
+       </div><br>
+        <div class="mb-3">
+            <label for="password2" class="form-label">비밀번호 확인</label>
+            <input type="password" th:field="*{password2}" class="form-control">
+           <div id="password2-error"></div>
+         </div><br>
+        <div class="mb-3">
+            <label for="email" class="form-label">이메일</label>
+            <input type="email" th:field="*{email}" class="form-control">
+            <input class="btn btn-outline-primary"  name="checkEmailNumber" id="checkEmailNumber"  type="button" value="인증번호 발송">
+             <div id="email-error"></div>
+        </div><br>
+        <div class="mb-3">
+			<label for="code" class="form-label">인증번호</label>
+              <input type="text" class="form-control" name="inputCode" id="inputCode" maxlength="6" placeholder="인증번호를 입력해주세요" >
+            <input class="btn btn-outline-primary"  name="check" id="check"  type="button" value="확인하기">
+			</div></br>
+
+      
+		
+        <button type="submit" class="btn btn-primary">회원가입</button>
+    </form>
+</div>
+<style>
+	#username-error{
+		font-size: 1px;
+	}
+	#password1-error{
+		font-size: 1px;
+	}
+	#password2-error{
+		font-size: 1px;
+	}
+	#email-error{
+		font-size: 1px;
+	}
+</style>
+</html>

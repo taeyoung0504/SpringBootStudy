@@ -1,0 +1,67 @@
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/board2
+    username: root
+    password: 1234
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+  security:
+        oauth2:
+            client:
+                registration:
+                  google:
+                      clientId: 54971681760-f4js7iir20gd6508i1j6q4uto5ralucj.apps.googleusercontent.com
+                      clientSecret: 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
+                      scope:
+                        - email
+                        - profile
+                  kakao:
+                       clientId: c280c9a2e84775e794e3f62fbfe54f25
+                       clientSecret: FslqkwftGMEjmVaY8Sw7MKfDueIEN22N
+                       clientAuthenticationMethod: post
+                       authorizationGrantType: authorization_code
+                       redirectUri: http://localhost:8080/login/oauth2/code/kakao
+                       scope:
+                        - profile_nickname
+                        - account_email
+                       clientName: Kakao
+                  naver:
+                      clientId: poPGeI1fQBJ4nnHBVco0
+                      clientSecret: BlQByxvepv
+                      
+                      redirectUri: http://localhost:8080/login/oauth2/code/naver
+                      authorizationGrantType: authorization_code
+                      scope: 
+                       - name 
+                       - email
+                      client-name: Naver
+                provider:
+                    kakao:
+                         authorizationUri: https://kauth.kakao.com/oauth/authorize
+                         tokenUri: https://kauth.kakao.com/oauth/token
+                         userInfoUri: https://kapi.kakao.com/v2/user/me
+                         userNameAttribute: id
+                    naver:
+                         authorizationUri: https://nid.naver.com/oauth2.0/authorize
+                         tokenUri: https://nid.naver.com/oauth2.0/token
+                         userInfoUri: https://openapi.naver.com/v1/nid/me
+                         userNameAttribute: response
+app:
+  auth:
+    tokenSecret: TOKEN_SECRET
+    tokenExpiry: 1800000
+    refreshTokenExpiry: 604800000
+  oauth2:
+    authorizedRedirectUris:
+      - http://localhost:8080/oauth/redirect
+
+
+             
