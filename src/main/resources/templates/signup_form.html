@@ -6,6 +6,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
   <script>
 $(function() {
+
   // username 유효성 검증
   var $username = $('#username');
   var $usernameError = $('#username-error');
@@ -38,7 +39,7 @@ $(function() {
   
   // password 유효성 검증
   var $password1 = $('#password1');
-  var $inputCode_error = $('#password1-error');
+  var $passwordError = $('#password1-error');
   
   $password1.on('input focusout', function() {
     var password = $password1.val();
@@ -53,80 +54,88 @@ $(function() {
       $passwordError.hide();
     }
   });
+ // 인증번호 발송
+  var $checkEmailNumber = $('#checkEmailNumber');
+  var $email = $('#email');
+  var $inputCode = $('#inputCode');
+  var $inputCode_error = $('#inputCode_error');
+  var $check = $('#check');
 
+  $checkEmailNumber.on('click', function(){
+    var email = $email.val();
+		emconfirmchk = false;
+    if(email.trim() !== ''){
+      $.ajax({
+        url: "/user/emailcode",
+        type: "POST",
+        data: {
+          "email": email          
+        },
+        success: function(data){
+          
+          alert("인증번호가 발송되었습니다");
+          startStopwatch($('#timer'));
+          $checkEmailNumber.prop('disabled', true);
+          $email.prop('readonly', true);
+          $('#timer').show();
 
-
-//인증번호 발송
-
-    var $checkEmailNumber = $('#checkEmailNumber');
-    var $email = $('#email');
-    
-    $checkEmailNumber.on('click', function(){
-		var email = $email.val();
-		
-		
-			if(email.trim()!==''){
-			$.ajax({
-			url: "/user/emailcode",
-			type: "POST",
-			data: {
-				"email" : email				
-			},
-			success: function(data){
-				alert("인증번호가 발송되었습니다");
-			},
-			error: function(){
-				alert("인증번호 전송에 실패했습니다");
-			}
-			});
-			}
-			
-			
-			
-     
-	});
-
-var $inputCode = $('#inputCode');
-var $inputCode_error = $('#inputCode_error');
-  
-  $inputCode.on('input focusout', function() {
-    var inputCode = $inputCode.val();
-    
-    if (inputCode.trim() === '') {
-       $inputCode_error.text('인증번호 확인은 필수 값입니다.').show();
-    } else {
-		 $inputCode_error.hide();
-		 
-		    $.ajax({
-        type: 'POST',
-        url: '/user/verify', // Endpoint for email verification code validation
-        data: { "inputCode": inputCode },
-        dataType: 'json',
-        success: function(response) {
-          // If the response is successful, the email code is valid
-          // You can perform further actions or display a success message
-          $inputCode_error.text('일치함').show()
+          $check.on("click", function() {
+            if (emconfirmchk == false && data == $inputCode.val()) {
+              alert("인증번호 확인되었습니다.");
+              $('#timer').hide();
+              $checkEmailNumber.prop('disabled', true);456546
+              $email.prop('readonly', true);
+              $signupButton.prop('disabled', false);
+              $check.prop('disabled',true);
+            } else {
+              alert("인증번호가 틀립니다 이메일 또는 인증번호를 다시 확인하세요");
+              $email.prop('readonly', false);
+              $checkEmailNumber.prop('disabled', false);
+            }
+          });
+        },
+        error: function(){
+          alert("인증번호 전송에 실패했습니다");
+          $email.prop('readonly', false);
         }
-        });
-        
-	}
-	});
-    
-   
+      });
+    }
+  });
+
+  // 스톱워치
+  function startStopwatch(display) {
+    var stopwatch = 180; // 초기 스톱워치 값 (60초)
+    var interval = setInterval(function() {
+      var minutes = Math.floor(stopwatch / 60);
+      var seconds = stopwatch % 60;
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      display.text(minutes + ":" + seconds);
+
+      if (stopwatch <= 0) {
+        clearInterval(interval);
+        $('#timer').hide();
+        $email.prop('readonly', false);
+        emconfirmchk = true;
+        alert('인증번호 유효시간이 만료하였습니다 재발급 받으시길 바랍니다.');
+         $signupButton.prop('disabled', false);
+      }
+
+      stopwatch--;
+    }, 1000);
+  }
+
+  var $signupButton = $('button[type="submit"]');
+  $signupButton.prop('disabled', true);
   
-//
-
-
-
-
-
-
-
-
-
+  
+  
 });
 
-  </script>
+
+</script>
 </head>
 <div class="container my-3">
     <div class="my-3 border-bottom">
@@ -135,7 +144,7 @@ var $inputCode_error = $('#inputCode_error');
         </div>
     </div>
     <form th:action="@{/user/signup}" th:object="${userCreateForm}" method="post">
-		 <div th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" 
+       <div th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" 
              class="alert alert-danger" role="alert" th:text="${err}"></div> 
         <div class="mb-3">
             <label for="username" class="form-label">사용자ID</label>
@@ -145,46 +154,49 @@ var $inputCode_error = $('#inputCode_error');
         <div class="mb-3">
             <label for="password1" class="form-label">비밀번호</label>
             <input type="password" th:field="*{password1}" class="form-control">
-  			<div id="password1-error"></div>
-       </div><br>
+            <div id="password1-error"></div>
+        </div><br>
         <div class="mb-3">
             <label for="password2" class="form-label">비밀번호 확인</label>
             <input type="password" th:field="*{password2}" class="form-control">
-           <div id="password2-error"></div>
-         </div><br>
+            <div id="password2-error"></div>
+        </div><br>
         <div class="mb-3">
             <label for="email" class="form-label">이메일</label>
             <input type="email" th:field="*{email}" class="form-control">
-            <input class="btn btn-outline-primary"  name="checkEmailNumber" id="checkEmailNumber"  type="button" value="인증번호 발송">
-             <div id="email-error"></div>
+            <input class="btn btn-outline-primary" name="checkEmailNumber" id="checkEmailNumber" type="button" value="인증번호 발송">
+            <div id="email-error"></div>
         </div><br>
         <div class="mb-3">
-			<label for="code" class="form-label">인증번호</label>
-              <input type="text" class="form-control" name="inputCode" id="inputCode" maxlength="6" placeholder="인증번호를 입력해주세요" >
-            <input class="btn btn-outline-primary"  name="check" id="check"  type="button" value="확인하기">
+            <label for="code" class="form-label">인증번호</label>
+            <input type="text" class="form-control" name="inputCode" id="inputCode" maxlength="6" placeholder="인증번호를 입력해주세요" >
+            <span id="timer">03:00</span>
+            <input class="btn btn-outline-primary" name="check" id="check" type="button" value="확인하기">
             <div id="inputCode_error"></div>
-			</div></br>
+        </div><br>
 
-      
-		
         <button type="submit" class="btn btn-primary">회원가입</button>
     </form>
 </div>
 <style>
-	#username-error{
-		font-size: 1px;
-	}
-	#password1-error{
-		font-size: 1px;
-	}
-	#password2-error{
-		font-size: 1px;
-	}
-	#email-error{
-		font-size: 1px;
-	}
-	#inputCode_error{
-		font-size: 1px;
-	}
+   #username-error{
+      font-size: 1px;
+   }
+   #password1-error{
+      font-size: 1px;
+   }
+   #password2-error{
+      font-size: 1px;
+   }
+   #email-error{
+      font-size: 1px;
+   }
+   #inputCode_error{
+      font-size: 1px;
+   }
+   #timer{
+	   display: none;
+	   color: red;
+   }
 </style>
 </html>

@@ -76,7 +76,7 @@ public class EmailService {
     	ePw = createKey();
         MimeMessage message = createMessage(to);
         try{
-        	redisUtill.setDataExpire(ePw, to, 60*1L); //인증코드 1분 시간제한
+        	redisUtill.setDataExpire(ePw, to, 60*3L); //인증코드 3분 시간제한
             javaMailSender.send(message); // 메일 발송
         }catch(MailException es){
             es.printStackTrace();
