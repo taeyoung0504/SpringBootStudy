@@ -42,13 +42,44 @@ public class EmailService {
         message.setSubject(" 회원가입 인증 코드: "); //메일 제목
 
         // 메일 내용 메일의 subtype을 html로 지정하여 html문법 사용 가능
-        String msg="";
-        msg += "<h1 style=\"font-size: 30px; padding-right: 30px; padding-left: 30px;\">이메일 주소 확인</h1>";
-        msg += "<p style=\"font-size: 17px; padding-right: 30px; padding-left: 30px;\">아래 확인 코드를 회원가입 화면에서 입력해주세요.</p>";
-        msg += "<div style=\"padding-right: 30px; padding-left: 30px; margin: 32px 0 40px;\"><table style=\"border-collapse: collapse; border: 0; background-color: #F4F4F4; height: 70px; table-layout: fixed; word-wrap: break-word; border-radius: 6px;\"><tbody><tr><td style=\"text-align: center; vertical-align: middle; font-size: 30px;\">";
+        String msg = "";
+        msg += "<div style=\"font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid {$point_color}; margin: 100px auto; padding: 30px 0; box-sizing: border-box;\">";
+        msg += "<h1 style=\"margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;\">";
+        msg += "<span style=\"font-size: 15px; margin: 0 0 10px 3px;\"></span><br />";
+        msg += "<span style=\"color: {$point_color}; border-bottom: 2px solid green;\">회원가입 인증번호 안내입니다. </span>";
+        msg += "</h1>";
+        msg += "<p style=\"font-size: 16px; line-height: 26px; margin-top: 50px; padding: 0 5px;\">";
+        msg += "안녕하세요 저기어때 입니다.<br />";
+        msg += "요청하신 회원가입을 위한 인증번호가 생성되었습니다.<br />";
+        msg += "아래 <b style=\"color: {$point_color};\">'인증번호'</b>를 , 인증번호 입력 창에 입력하세요.<br />";
+        msg += "감사합니다.";
+        msg += "</p><br />";
+        msg += "<p style=\"font-size: 16px; margin: 40px 5px 20px; line-height: 28px;\">";
+        msg += "인증번호 : <br />";
+        msg += "<span style=\"font-size: 24px;\">";
+        msg += ePw;
+        msg += "</span>";
+        msg += "</p>";
+        msg += "<br />";
+        msg += "<div style=\"border-top: 1px solid #DDD; padding: 5px;\">";
+        msg += "<p style=\"font-size: 13px; line-height: 21px; color: #555;\">";
+        msg += "</p>";
+        msg += "</div>";
+        msg += "</div>";
+        
+        
+        /*
+        msg += "<div style=\"background-color: #F4F4F4; padding: 30px; border-radius: 6px;\">";
+        msg += "  <h1 style=\"font-size: 30px; margin-bottom: 20px;\">이메일 주소 확인</h1>";
+        msg += "  <p style=\"font-size: 17px;\">아래 확인 코드를 회원가입 화면에서 입력해주세요.</p>";
+        msg += "  <div style=\"margin-top: 32px;\">";
+        msg += "    <table style=\"border-collapse: collapse; border: 0; height: 70px; table-layout: fixed; word-wrap: break-word;\">";
+        msg += "      <tbody>";
+        msg += "        <tr>";
+        msg += "          <td style=\"text-align: center; vertical-align: middle; font-size: 30px;\">";
         msg += ePw;
         msg += "</td></tr></tbody></table></div>";
-
+*/
         message.setText(msg, "utf-8", "html"); //내용, charset타입, subtype
         message.setFrom(new InternetAddress(id,"저기어때")); //보내는 사람의 메일 주소, 보내는 사람 이름
         
