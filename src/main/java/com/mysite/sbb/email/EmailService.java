@@ -24,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
-    @Autowired
-    private RedisUtill redisUtill;
+    //@Autowired
+    //private RedisUtill redisUtill;
  
   
     //인증번호 생성
@@ -76,7 +76,7 @@ public class EmailService {
     	ePw = createKey();
         MimeMessage message = createMessage(to);
         try{
-        	redisUtill.setDataExpire(ePw, to, 60*3L); //인증코드 3분 시간제한
+        	//redisUtill.setDataExpire(ePw, to, 60*3L); //인증코드 3분 시간제한
             javaMailSender.send(message); // 메일 발송
         }catch(MailException es){
             es.printStackTrace();
@@ -84,13 +84,14 @@ public class EmailService {
         }
         return ePw; // 메일로 보냈던 인증 코드를 서버로 리턴
     }
-    
+    /*
     public String verifyEmail(String key) throws ChangeSetPersister.NotFoundException {
         String memberEmail = redisUtill.getData(key);
         if (memberEmail == null) {
             throw new ChangeSetPersister.NotFoundException();
         }
-        redisUtill.deleteData(key);
+        //redisUtill.deleteData(key);
         return ePw;
     }
+    */
 }
