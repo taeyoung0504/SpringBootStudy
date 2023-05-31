@@ -139,6 +139,7 @@ public class UserController {
 
 				return result;
 			}
+			
 		} else {
 			String result = "<br>등록된 사용자가 아니거나 SNS 유저는 확인 할 수 없습니다.<br>";
 
