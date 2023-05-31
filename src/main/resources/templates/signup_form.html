@@ -55,81 +55,93 @@ $(function() {
     }
   });
  // 인증번호 발송
-  var $checkEmailNumber = $('#checkEmailNumber');
-  var $email = $('#email');
-  var $inputCode = $('#inputCode');
-  var $inputCode_error = $('#inputCode_error');
-  var $check = $('#check');
+var $checkEmailNumber = $('#checkEmailNumber');
+var $email = $('#email');
+var $inputCode = $('#inputCode');
+var $inputCode_error = $('#inputCode_error');
+var $check = $('#check');
+var interval; // 전역 변수로 선언
 
-  $checkEmailNumber.on('click', function(){
-    var email = $email.val();
-		emconfirmchk = false;
-    if(email.trim() !== ''){
-      $.ajax({
-        url: "/user/emailcode",
-        type: "POST",
-        data: {
-          "email": email          
-        },
-        success: function(data){
-          
-          alert("인증번호가 발송되었습니다");
-          startStopwatch($('#timer'));
-          $checkEmailNumber.prop('disabled', true);
-          $email.prop('readonly', true);
-          $('#timer').show();
+$checkEmailNumber.on('click', function() {
+  var email = $email.val();
+  emconfirmchk = false;
+  if (email.trim() !== '') {
+    $.ajax({
+      url: "/user/emailcode",
+      type: "POST",
+      data: {
+        "email": email
+      },
+      success: function(data) {
+        alert("인증번호가 발송되었습니다");
+        
+        startStopwatch($('#timer'));
+        $checkEmailNumber.prop('disabled', true);
+        $email.prop('readonly', true);
+        $('#timer').show();
 
-          $check.on("click", function() {
-            if (emconfirmchk == false && data == $inputCode.val()) {
-              alert("인증번호 확인되었습니다.");
-              $('#timer').hide();
-              $checkEmailNumber.prop('disabled', true);456546
-              $email.prop('readonly', true);
-              $signupButton.prop('disabled', false);
-              $check.prop('disabled',true);
-            } else {
-              alert("인증번호가 틀립니다 이메일 또는 인증번호를 다시 확인하세요");
-              $email.prop('readonly', false);
-              $checkEmailNumber.prop('disabled', false);
-            }
-          });
-        },
-        error: function(){
-          alert("인증번호 전송에 실패했습니다");
-          $email.prop('readonly', false);
-        }
-      });
-    }
-  });
-
-  // 스톱워치
-  function startStopwatch(display) {
-    var stopwatch = 180; // 초기 스톱워치 값 (60초)
-    var interval = setInterval(function() {
-      var minutes = Math.floor(stopwatch / 60);
-      var seconds = stopwatch % 60;
-
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      seconds = seconds < 10 ? "0" + seconds : seconds;
-
-      display.text(minutes + ":" + seconds);
-
-      if (stopwatch <= 0) {
-        clearInterval(interval);
-        $('#timer').hide();
+        $check.on("click", function() {
+          if (emconfirmchk == false && data == $inputCode.val()) {
+            alert("인증번호 확인되었습니다.");
+            $('#timer').hide();
+            $checkEmailNumber.prop('disabled', true);
+            $email.prop('readonly', true);
+            $signupButton.prop('disabled', false);
+            $check.prop('disabled', true);
+            clearInterval(interval); // 전역 변수인 interval 사용
+          } else if(emconfirmchk == true && data == $inputCode.val()){
+            alert("인증번호가 틀립니다 이메일 또는 인증번호를 다시 확인하세요");
+            $email.prop('readonly', false);
+            $checkEmailNumber.prop('disabled', false);
+            emconfirmchk = false;
+          }else if(emconfirmchk == false && data !== $inputCode.val()){
+            alert("인증번호가 틀립니다 이메일 또는 인증번호를 다시 확인하세요");
+            $email.prop('readonly', false);
+            $checkEmailNumber.prop('disabled', false);
+            emconfirmchk = false;
+          }else if(emconfirmchk == true && data == $inputCode.val()){
+            alert("인증번호가 틀립니다 이메일 또는 인증번호를 다시 확인하세요");
+            $email.prop('readonly', false);
+            $checkEmailNumber.prop('disabled', false);
+            emconfirmchk = false;
+          }
+        });
+      },
+      error: function() {
+        alert("인증번호 전송에 실패했습니다");
         $email.prop('readonly', false);
-        emconfirmchk = true;
-        alert('인증번호 유효시간이 만료하였습니다 재발급 받으시길 바랍니다.');
-         $signupButton.prop('disabled', false);
       }
-
-      stopwatch--;
-    }, 1000);
+    });
   }
+});
 
-  var $signupButton = $('button[type="submit"]');
-  $signupButton.prop('disabled', true);
-  
+// 스톱워치
+function startStopwatch(display) {
+  var stopwatch = 15; // 초기 스톱워치 값 (60초)
+  interval = setInterval(function() {
+    var minutes = Math.floor(stopwatch / 60);
+    var seconds = stopwatch % 60;
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    display.text(minutes + ":" + seconds);
+
+    if (stopwatch <= 0) {
+      clearInterval(interval); // 전역 변수인 interval 사용
+      $('#timer').hide();
+      $email.prop('readonly', false);
+      emconfirmchk = true;
+      alert('인증번호 유효시간이 만료하였습니다 재발급 받으시길 바랍니다.');
+      $signupButton.prop('disabled', false);
+    }
+
+    stopwatch--;
+  }, 1000);
+}
+
+var $signupButton = $('button[type="submit"]');
+$signupButton.prop('disabled', true);
   
   
 });
@@ -170,7 +182,7 @@ $(function() {
         <div class="mb-3">
             <label for="code" class="form-label">인증번호</label>
             <input type="text" class="form-control" name="inputCode" id="inputCode" maxlength="6" placeholder="인증번호를 입력해주세요" >
-            <span id="timer">03:00</span>
+            <span id="timer">00:15</span>
             <input class="btn btn-outline-primary" name="check" id="check" type="button" value="확인하기">
             <div id="inputCode_error"></div>
         </div><br>
