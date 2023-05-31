@@ -126,7 +126,7 @@
 
 			// 스톱워치
 			function startStopwatch(display) {
-				var stopwatch = 15; // 초기 스톱워치 값 (60초)
+				var stopwatch = 180; // 초기 스톱워치 값 (60초)
 				interval = setInterval(function () {
 					var minutes = Math.floor(stopwatch / 60);
 					var seconds = stopwatch % 60;
@@ -195,7 +195,7 @@
 			<label for="code" class="form-label">인증번호</label>
 			<input type="text" class="form-control" name="inputCode" id="inputCode" maxlength="6"
 				placeholder="인증번호를 입력해주세요">
-			<span id="timer">00:15</span>
+			<span id="timer">03:00</span>
 			<input class="btn btn-outline-primary" name="check" id="check" type="button" value="확인하기">
 			<div id="inputCode_error"></div>
 		</div><br>
