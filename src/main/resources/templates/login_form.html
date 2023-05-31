@@ -1,4 +1,9 @@
-
+<style>
+	a {
+    color: inherit;
+    text-decoration: none;
+}
+</style>
 <div class="container my-3">
     <form th:action="@{/user/login}" method="post">
         <div th:if="${param.error}">
@@ -14,7 +19,10 @@
             <label for="password" class="form-label">비밀번호</label>
             <input type="password" name="password" id="password" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">로그인</button>
+        <button type="submit" class="btn btn-primary">로그인</button><br>
+        <a href="/user/find_id" class="btn btn-facebook btn-user btn-block">아이디 찾기 </a> | 
+         <a href="/user/find_pw" class="btn btn-facebook btn-user btn-block">비밀번호 찾기 </a> |
+        <a href="/user/signup" class="btn btn-facebook btn-user btn-block">회원가입</a>
     </form>
     <button id="kakao_login_btn">카카오 로그인</button>
     <button id="google_login_btn">구글 로그인</button>

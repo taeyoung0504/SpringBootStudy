@@ -86,5 +86,16 @@ public class UserController {
         return code;
     }
     
-  
+    @GetMapping("/find_pw")
+    public String findPW() {
+    	return "find_pw";
+    }
+    /*
+    @PostMapping("/temp_pwd")
+    @ResponseBody
+    public String sendTempPwd(@RequestParam String email) throws Exception {
+        String code = emailService.sendTempMessage(email);
+        return code;
+    }
+*/  
 }
