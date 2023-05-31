@@ -9,7 +9,7 @@ SpringBoot를 이용한 공부
 
 - Ajax를 통한 회원가입, 로그인 입력값 유효성 검증
 
-- 에러페이지 변경(Http_status_code : 403, 404, 500) _ whitelabe page 방지
+- 에러페이지 변경(Http_status_code : 403, 404, 500) _ whitelabel page 방지
 
 - 회원 가입 시 이메일 인증 => 이메일 인증을 못하면 회원가입 불가능 , 3분 시간제한 
 
