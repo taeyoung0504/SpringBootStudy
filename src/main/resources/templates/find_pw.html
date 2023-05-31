@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Validation Example</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      var $checkEmail = $('#check_email');
+      var $email = $('#email');
+      var $username = $('#username');
+
+      $checkEmail.on('click', function() {
+        var email = $email.val();
+        var username = $username.val();
+        if (email.trim() !== '') {
+          $.ajax({
+            url: "/user/temp_pwd",
+            type: "POST",
+            data: {
+              "email": email,
+              "username":username
+            },
+            success: function(response) {
+              var data = response; // 인증번호 데이터 저장
+              alert("임시비밀번호가 발송되었습니다");
+
+            },
+                error: function(xhr, status, error) {
+              alert("회원이 아니거나 아이디와 이메일이 맞지 않습니다.");
+            }
+          });
+        }
+      });
+    });
+
+	</script>
+</head>
+<div class="container my-3">
+	<div class="my-3 border-bottom">
+		<div>
+			<h4>회원가입</h4>
+		</div>
+	</div>
+	<div class="mb-3">
+		<label for="username" class="form-label">사용자ID</label>
+		<input type="text" class="form-control" id="username">
+		<div id="username-error"></div>
+	</div>
+
+	<div class="mb-3">
+		<label for="email" class="form-label">이메일</label>
+		<input type="email" class="form-control" id="email">
+		<div id="email-error"></div><br>
+	</div>
+	<input class="btn btn-outline-primary" id="check_email" type="button" value="임시비밀번호 발송">
+	<br/>
+	<br/>
+	<a href="/user/login" class="btn btn-facebook btn-user btn-block">로그인 페이지로</a>

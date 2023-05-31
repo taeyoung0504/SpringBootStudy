@@ -5,11 +5,13 @@ import jakarta.validation.Valid;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,7 +76,8 @@ public class UserController {
 	}
 
 	private final EmailService emailService;
-
+	private final PasswordEncoder passwordEncoder;
+	
 	@PostMapping("/emailcode")
 	@ResponseBody
 	public String mailConfirm(@RequestParam String email) throws Exception {
@@ -86,10 +89,26 @@ public class UserController {
 	public String findPW() {
 		return "find_pw";
 	}
-	/*
-	 * @PostMapping("/temp_pwd")
-	 * 
-	 * @ResponseBody public String sendTempPwd(@RequestParam String email) throws
-	 * Exception { String code = emailService.sendTempMessage(email); return code; }
-	 */
+
+	@PostMapping("/temp_pwd")
+	@ResponseBody
+	public String sendTempPwd(@RequestParam String email, @RequestParam String username) throws Exception {
+	
+		List<SiteUser> users = userService.find(username, email);
+		
+		if(users !=null && !users.isEmpty()) {
+			String code = emailService.sendSimpleMessage(email);
+		
+			//임시 비밀번호로 패스워드 변경
+			  	SiteUser user = users.get(0);
+			  	user.setPassword(passwordEncoder.encode(code));
+		        userService.save(user);
+			
+			return code;
+		} else {
+			String result = null;
+			return result;
+		}
+	
+	}
 }

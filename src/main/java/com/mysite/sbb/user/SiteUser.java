@@ -70,4 +70,6 @@ public class SiteUser {
 		return this.role.getValue();
 	}
 
+	
+	
 }

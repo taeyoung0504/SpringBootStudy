@@ -1,6 +1,8 @@
 package com.mysite.sbb.user;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,8 +35,21 @@ public class UserService {
     }
     
     
+    public Optional<SiteUser> check2(String email){
+    	return userRepository.findByEmail(email);
+    }
     
+    public List<SiteUser> find(String username, String email) {
+    	
+        return userRepository.findByUsernameAndEmail(username, email)
+                .map(Collections::singletonList)
+                .orElse(Collections.emptyList());
+    }
     
-    
+//임시비밀번호로 패스워드 변경
+    public void save(SiteUser user) {
+    	this.userRepository.save(user);
+        System.out.println("Saving user: " + user.getUsername() + ", Password: " + user.getPassword());
+    }
   
 }
